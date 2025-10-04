@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Song Admin Panel</title>
+  <style>
+    :root {
+      --color-primary: #ef4444;
+      --color-primary-dark: #dc2626;
+      --color-danger: #b91c1c;
+      --color-bg: #0f0f0f;
+      --color-surface: #1a1a1a;
+      --color-surface-elevated: #262626;
+      --color-border: #404040;
+      --color-text: #fafafa;
+      --color-text-secondary: #a3a3a3;
+      --color-success: #22c55e;
+      --radius: 0.75rem;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-elevated) 100%);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, var(--color-primary) 0%, #f87171 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-admin {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-danger) 100%);
+      color: white;
+    }
+
+    .badge-subadmin {
+      background: var(--color-surface-elevated);
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: calc(var(--radius) * 0.66);
+      color: var(--color-text);
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      border-radius: calc(var(--radius) * 0.66);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      gap: 0.5rem;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger {
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #991b1b;
+    }
+
+    .btn-secondary {
+      background: var(--color-surface-elevated);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--color-border);
+    }
+
+    .btn-icon {
+      padding: 0.5rem;
+      min-width: 2.5rem;
+    }
+
+    .song-item {
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: calc(var(--radius) * 0.75);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .song-item:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+    }
+
+    .song-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .song-info {
+      flex: 1;
+    }
+
+    .song-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+
+    .song-meta {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .song-id {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.125rem 0.5rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 0.375rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: var(--color-primary);
+    }
+
+    .song-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 300px;
+      height: 32px;
+    }
+
+    .playlist-item {
+      background: var(--color-surface-elevated);
+      border: 1px solid var(--color-border);
+      border-radius: calc(var(--radius) * 0.75);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .playlist-info {
+      flex: 1;
+    }
+
+    .playlist-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .playlist-count {
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .message {
+      padding: 0.75rem 1rem;
+      border-radius: calc(var(--radius) * 0.66);
+      margin-top: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .message-error {
+      background: rgba(185, 28, 28, 0.1);
+      border: 1px solid var(--color-danger);
+      color: #fca5a5;
+    }
+
+    .message-success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid var(--color-success);
+      color: #86efac;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-surface-elevated);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      border: 1px solid var(--color-border);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-danger) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.125rem;
+      color: white;
+    }
+
+    .user-details h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.125rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--color-text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .song-header {
+        flex-direction: column;
+      }
+
+      .song-controls {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      audio {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎵 Song Admin Panel</h1>
+  </header>
+
+  <div class="container">
+     Login Section 
+    <div id="loginSection">
+      <div class="card" style="max-width: 400px; margin: 4rem auto;">
+        <div class="card-header">
+          <h2 class="card-title">Login</h2>
+        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" id="username" placeholder="Enter username" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" placeholder="Enter password" required/>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">
+            Login
+          </button>
+        </form>
+        <div id="loginMsg"></div>
+      </div>
+    </div>
+
+     Dashboard Section 
+    <div id="dashboardSection" class="hidden">
+      <div class="user-bar">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar"></div>
+          <div class="user-details">
+            <h3 id="userName"></h3>
+            <span id="userRole"></span>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="logout()">Logout</button>
+      </div>
+
+       Upload Song 
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📤 Upload Song</h2>
+        </div>
+        <form id="uploadForm">
+          <div class="form-group">
+            <label class="form-label">Song Title</label>
+            <input type="text" name="title" placeholder="Enter song title" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Artist</label>
+            <input type="text" name="artist" placeholder="Enter artist name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select name="category" id="categorySelect" required></select>
+          </div>
+          <div class="form-group">
+  <label class="form-label">Audio File (or provide URL)</label>
+  <input type="file" name="songFile" accept="audio/*"/>
+</div>
+<div class="form-group">
+  <label class="form-label">Or Song URL</label>
+  <input type="text" name="songUrl" placeholder="Enter song URL"/>
+</div>
+
+          <button type="submit" class="btn-primary">Upload Song</button>
+        </form>
+        <div id="uploadMsg"></div>
+      </div>
+
+       All Songs 
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🎶 All Songs</h2>
+        </div>
+        <div id="songsList"></div>
+      </div>
+
+       Playlists (Admin Only) 
+      <div id="playlistsBlock" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📚 Playlists</h2>
+          </div>
+          <form id="createPlForm" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" name="name" placeholder="New playlist name" required style="flex: 1;"/>
+              <button type="submit" class="btn-primary">Create</button>
+            </div>
+          </form>
+          <div id="playlistsList"></div>
+        </div>
+      </div>
+
+       Subadmin Control (Admin Only) 
+      <div id="subAdminBlock" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🔐 Subadmin Control</h2>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-danger" onclick="blockSub()">Block Subadmin</button>
+            <button class="btn-primary" onclick="unblockSub()">Unblock Subadmin</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let auth = null;
+    let categories = [];
+    let currentRole = null;
+    const API_KEY = "my_secret_flutter_key_123";
+    async function api(path, options = {}) {
+      if (auth) {
+        options.headers = options.headers || {};
+        options.headers['username'] = auth.username;
+        options.headers['password'] = auth.password;
+      }
+      const res = await fetch(path, options);
+      if (!res.ok) {
+        let msg = await res.json().catch(() => ({ error: "Request failed" }));
+        throw new Error(msg.error || "Error");
+      }
+      return res.json();
+    }
+
+    document.getElementById("loginForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      try {
+        await api("/api/health", { headers: { username, password } });
+        auth = { username, password };
+        currentRole = username === "admin" ? "admin" : "subadmin";
+        
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("dashboardSection").classList.remove("hidden");
+        
+        document.getElementById("userAvatar").innerText = username.charAt(0).toUpperCase();
+        document.getElementById("userName").innerText = username;
+        
+        const roleBadge = currentRole === "admin" 
+          ? '<span class="badge badge-admin">Admin</span>'
+          : '<span class="badge badge-subadmin">Subadmin</span>';
+        document.getElementById("userRole").innerHTML = roleBadge;
+        
+        if (currentRole === "admin") {
+          document.getElementById("playlistsBlock").classList.remove("hidden");
+          document.getElementById("subAdminBlock").classList.remove("hidden");
+        }
+        
+        await loadCategories();
+        await loadSongs();
+        await loadPlaylists();
+      } catch (e) {
+        const msgEl = document.getElementById("loginMsg");
+        msgEl.className = "message message-error";
+        msgEl.innerText = e.message;
+      }
+    };
+
+    function logout() {
+      auth = null;
+      currentRole = null;
+      document.getElementById("dashboardSection").classList.add("hidden");
+      document.getElementById("loginSection").classList.remove("hidden");
+      document.getElementById("loginForm").reset();
+      document.getElementById("loginMsg").innerText = "";
+    }
+
+    async function loadCategories() {
+const res = await fetch("/api/categories", {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": `${API_KEY}` // or use 'X-API-KEY' if your backend expects it
+  }
+});      const data = await res.json();
+      categories = data.categories;
+      const sel = document.getElementById("categorySelect");
+      sel.innerHTML = "";
+      categories.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.innerText = c;
+        sel.appendChild(opt);
+      });
+    }
+
+    async function loadSongs() {
+      try {
+const data = await fetch("/api/songs", {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": `${API_KEY}` // or "X-API-KEY" depending on backend
+  }
+}).then(res => res.json());
+        const list = document.getElementById("songsList");
+        
+        if (data.songs.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🎵</div>
+              <p>No songs uploaded yet</p>
+            </div>
+          `;
+          return;
+        }
+        
+        list.innerHTML = "";
+        data.songs.forEach(s => {
+          const div = document.createElement("div");
+          div.className = "song-item";
+          
+          const songHeader = document.createElement("div");
+          songHeader.className = "song-header";
+          
+          const songInfo = document.createElement("div");
+          songInfo.className = "song-info";
+          
+          const title = document.createElement("div");
+          title.className = "song-title";
+          title.innerText = s.title;
+          
+          const meta = document.createElement("div");
+          meta.className = "song-meta";
+          
+          if (currentRole === "admin") {
+            const idSpan = document.createElement("span");
+            idSpan.className = "song-id";
+            idSpan.innerHTML = `<span>ID:</span> ${s.id}`;
+            meta.appendChild(idSpan);
+          }
+          
+          const artist = document.createElement("span");
+          artist.innerText = `👤 ${s.artist || 'Unknown'}`;
+          meta.appendChild(artist);
+          
+          const category = document.createElement("span");
+          category.innerText = `📂 ${s.category}`;
+          meta.appendChild(category);
+          
+          songInfo.appendChild(title);
+          songInfo.appendChild(meta);
+          
+          const controls = document.createElement("div");
+          controls.className = "song-controls";
+          
+          if (currentRole === "admin") {
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "btn-danger btn-icon";
+            deleteBtn.innerHTML = "🗑️";
+            deleteBtn.title = "Delete song";
+            deleteBtn.onclick = () => deleteSong(s.id);
+            controls.appendChild(deleteBtn);
+          }
+          
+          songHeader.appendChild(songInfo);
+          songHeader.appendChild(controls);
+          
+          const audio = document.createElement("audio");
+          audio.controls = true;
+          audio.src = s.file;
+          
+          div.appendChild(songHeader);
+          div.appendChild(audio);
+          list.appendChild(div);
+        });
+      } catch (e) {
+        const list = document.getElementById("songsList");
+        list.innerHTML = `<div class="message message-error">Failed to load songs: ${e.message}</div>`;
+      }
+    }
+
+    async function deleteSong(id) {
+      if (!confirm("Are you sure you want to delete this song?")) return;
+      try {
+        await api("/api/song/" + id, { method: "DELETE" });
+        await loadSongs();
+      } catch (e) {
+        alert("Failed to delete: " + e.message);
+      }
+    }
+
+    // document.getElementById("uploadForm").onsubmit = async (e) => { 
+    //   e.preventDefault();
+    //   const fd = new FormData(e.target);
+    //   const msgEl = document.getElementById("uploadMsg");
+    //   try {
+    //     await api("/api/upload", { method: "POST", body: fd });
+    //     msgEl.className = "message message-success";
+    //     msgEl.innerText = "Song uploaded successfully!";
+    //     e.target.reset();
+    //     await loadSongs();
+    //     setTimeout(() => { msgEl.innerText = ""; }, 3000);
+    //   } catch (err) {
+    //     msgEl.className = "message message-error";
+    //     msgEl.innerText = err.message;
+    //   }
+    // };
+document.getElementById("uploadForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData(form);
+  const fileInput = form.querySelector('input[name="songFile"]');
+  const urlInput = form.querySelector('input[name="songUrl"]');
+  const msgEl = document.getElementById("uploadMsg");
+
+  // Ensure either file or URL is provided
+  if (!fileInput.files[0] && !urlInput.value.trim()) {
+    msgEl.className = "message message-error";
+    msgEl.innerText = "Please upload a file or enter a song URL";
+    return;
+  }
+
+  try {
+const res = await fetch("/api/upload", {
+  method: "POST",
+  headers: {
+    "x-api-key": API_KEY,
+    "username": auth.username,
+    "password": auth.password
+  },
+  body: fd
+});
+    msgEl.className = "message message-success";
+    msgEl.innerText = "Song uploaded successfully!";
+    form.reset();
+    await loadSongs();
+    setTimeout(() => { msgEl.innerText = ""; }, 3000);
+  } catch (err) {
+    msgEl.className = "message message-error";
+    msgEl.innerText = err.message;
+  }
+};
+
+    async function loadPlaylists() {
+      if (currentRole !== "admin") return;
+      try {
+        const data = await api("/api/playlists");
+        const list = document.getElementById("playlistsList");
+        
+        if (data.playlists.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📚</div>
+              <p>No playlists created yet</p>
+            </div>
+          `;
+          return;
+        }
+        
+        list.innerHTML = "";
+        data.playlists.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "playlist-item";
+          
+          const info = document.createElement("div");
+          info.className = "playlist-info";
+          
+          const name = document.createElement("div");
+          name.className = "playlist-name";
+          name.innerText = p.name;
+          
+          const count = document.createElement("div");
+          count.className = "playlist-count";
+          count.innerText = `${p.songs.length} song${p.songs.length !== 1 ? 's' : ''}`;
+          
+          info.appendChild(name);
+          info.appendChild(count);
+          
+          const addBtn = document.createElement("button");
+          addBtn.className = "btn-primary";
+          addBtn.innerText = "Add Song";
+          addBtn.onclick = () => addToPlaylist(p.id);
+          
+          div.appendChild(info);
+          div.appendChild(addBtn);
+          list.appendChild(div);
+        });
+      } catch (e) {
+        const list = document.getElementById("playlistsList");
+        list.innerHTML = `<div class="message message-error">Failed to load playlists: ${e.message}</div>`;
+      }
+    }
+
+    document.getElementById("createPlForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      try {
+        await api("/api/playlists", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: fd.get("name") })
+        });
+        e.target.reset();
+        await loadPlaylists();
+      } catch (err) {
+        alert("Failed to create playlist: " + err.message);
+      }
+    };
+
+    async function addToPlaylist(plId) {
+      const songId = prompt("Enter Song ID to add to playlist:");
+      if (!songId) return;
+      try {
+        await api("/api/playlists/" + plId + "/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ songId })
+        });
+        alert("Song added successfully!");
+        await loadPlaylists();
+      } catch (err) {
+        alert("Failed to add song: " + err.message);
+      }
+    }
+
+    async function blockSub() {
+      try {
+        await api("/api/block-subadmin", { method: "POST" });
+        alert("Subadmin has been blocked successfully");
+      } catch (e) {
+        alert("Failed to block: " + e.message);
+      }
+    }
+
+    async function unblockSub() {
+      try {
+        await api("/api/unblock-subadmin", { method: "POST" });
+        alert("Subadmin has been unblocked successfully");
+      } catch (e) {
+        alert("Failed to unblock: " + e.message);
+      }
+    }
+  </script>
+</body>
+</html>
