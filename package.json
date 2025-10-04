@@ -1,0 +1,26 @@
+{
+  "name": "song-player-api",
+  "version": "1.0.0",
+  "description": "Simple song API + frontend player with categories and upload form",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "@google-cloud/recaptcha-enterprise": "^6.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "express-session": "^1.18.2",
+    "mongoose": "^8.19.0",
+    "multer": "^1.4.5-lts.1",
+    "sanitize-filename": "^1.6.3",
+    "tesseract.js": "^6.0.1",
+    "uuid": "^9.0.0",
+    "ytdl-core": "^4.11.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
