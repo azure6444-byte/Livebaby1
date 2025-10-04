@@ -10,9 +10,9 @@ require("dotenv").config();
 const userRoutes = require('./routes/users.js');
 
 // Models
-const User = require("./models/mainuser");
-const Song = require("./models/Song");
-const Playlist = require("./models/Playlist");
+const User = require("./model/mainuser");
+const Song = require("./model/Song");
+const Playlist = require("./model/Playlist");
 
 const PORT = process.env.PORT || 3000;
 const SONGS_DIR = path.join(__dirname, "songs");
